@@ -1,105 +1,132 @@
-// var svgWidth = 960;
-// var svgHeight = 500;
+/*
+<svg width="510" height="400">
+    <text transform="translate(310,320)">In Poverty (%)</text>
+    <text transform="translate(60,135) rotate(-90)">Obese (%)</text>
+    <circle cx="150" cy="150" r="10" class="stateCircle"></circle>
+    <text transform="translate(150,150)" class="stateText" font-size="10">ST</text>
+</svg>
+*/
 
-// var margin = {
-//   top: 20,
-//   right: 40,
-//   bottom: 60,
-//   left: 100
-// };
+var svgWidth = 1000;
+var svgHeight = 600;
 
-// var width = svgWidth - margin.left - margin.right;
-// var height = svgHeight - margin.top - margin.bottom;
+// @TODO: YOUR CODE HERE!
+var margin = {
+  top: 20,
+  right: 40,
+  bottom: 80,
+  left: 100
+}
+var width = svgWidth - margin.left - margin.right;
+var height = svgHeight - margin.top - margin.bottom;
+
 
 // var svg = d3.select("#scatter")
 //   .append("svg")
 //   .attr("width", svgWidth)
 //   .attr("height", svgHeight);
 
-// var chartGroup = svg.append("g")
-//   .attr("transform", `translate(${margin.left}, ${margin.top})`);
+var data;
 
-// d3.csv("data.csv").then(function(healthData){
-//     var states = healthData.map(d => d.state);
-//     var poverty = healthData.map(d => +d.poverty);
-//     var obesity = healthData.map(d => +d.obesity);
-  
-
-//     console.log(healthData);
-//     console.log("States: ", states);
-
-//     var yLinearScale = d3.scaleLinear().range([height, 0]);
-//     var xLinearScale = d3.scaleLinear().range([0, width]);
-
-//     var bottomAxis = d3.axisBottom(xLinearScale);
-//     var leftAxis = d3.axisLeft(yLinearScale);
-//     chartGroup.append("g")
-//       .call(leftAxis);
-//     chartGroup.append("g")
-//       .attr("transform", `translate(0, ${height})`)
-//       .call(bottomAxis);
-
-//     chartGroup.selectAll("circle")
-//       .data(healthData)
-//       .enter()
-//       .append("circle")
-//       .attr("cx", d => xLinearScale(poverty))
-//       .attr("cy", d => yLinearScale(obesity))
-//       .attr("r", 10)
-//       .style("fill", "blue")
-//       .attr("opacity", ".5");
-
-//     var toolTip = d3.tip()
-//       .attr("class", "tooltip")
-//       .offset([80, -60])
-//       .html(function(d){
-//         return(`${d.obesity}`);
-//       });
-
-//       chartGroup.call(toolTip);
-
-//     chartGroup.append("g")
-//       .selectAll("text")
-//       .data(healthData)
-//       .enter()
-//       .append("text")
-//       .attr("x", d =>xLinearScale(poverty))
-//       .attr("y", d=> yLinearScale(obesity))
-//       .style("text-anchor", "middle")
-//       .text(d => d.abbr);
-
-// });
-
-//set up our chart
-var svgWidth = 960
-var svgHeight = 500
-
-var margin = {
-  top: 20,
-  right: 40,
-  bottom: 60,
-  left: 50
+function importData(blah) {
+    data = blah;
+    console.log(data);
+    runLater();
+    
 }
 
 
-var width = svgWidth - margin.left - margin.right
-var height = svgHeight - margin.top - margin.bottom
-
-//create svg wrapper
 var svg = d3
-  .select("body")
-  .append("svg")
-  .attr("width", svgWidth)
-  .attr("height", svgHeight);
+    .select("#scatter")
+    .append("svg")
+    .attr("width",svgWidth)
+    .attr("height",svgHeight)
 
-//bring in csv file
-d3.csv("data.csv").then(function(healthData){
-  //insert any parsing variables here:
-  healthData.forEach(function(data){
-    data.income = +data.income
-    data.obesity = +data.obesity 
-  })
+svg
+    .append("text")
+    .attr("transform","translate(310,320)")
+    .text("In Poverty (%)");
 
-  var xTimeScale = d3.scaleTime
-  
-})
+svg
+    .append("text")
+    .attr("transform","translate(60,135) rotate(-90)")
+    .text("Obese (%)");
+
+d3.csv("data.csv").then(importData);
+
+
+var x, xMin, xMax;
+var y, yMin, yMax; 
+
+var xScale;
+var yScale;
+
+
+
+function runLater() {
+
+    // xMin = 1000;
+
+    // for (var i = 0; i < data.length; i++){
+    //     if(data[i].poverty < xMin){
+    //       xMin = data[i].poverty;
+    //     } 
+    // }
+    xMin = d3.min(data, d => parseFloat(d.poverty));
+    xMax = d3.max(data, d => parseFloat(d.poverty));
+    yMax = d3.max(data, d => parseFloat(d.obesity));
+    yMin = d3.min(data, d => parseFloat(d.obesity));
+
+    xScale = d3.scaleLinear()
+      .domain([xMin, xMax])
+      .range([0, 510]);
+
+    yScale = d3.scaleLinear()
+      .domain([yMin, yMax])
+      .range([0,400]);
+      
+
+    for (var i = 0; i < data.length; i++){
+
+        x = parseFloat(data[i].poverty);
+        y = parseFloat(data[i].obesity);
+
+        svg
+            .append("circle")
+            .attr("cx", xScale(x))
+            .attr("cy", yScale(y))
+            .attr("r", 10)
+            .attr("class", "stateCircle");
+
+        svg
+            .append("text")
+            .attr("transform", "translate(" + (xScale(x)) + "," + (yScale(y)) +")")
+            .attr("class", "stateText")
+            .attr("font-size", 10)
+            .text(data[i].abbr);
+};
+}
+
+// for (i = 0; i < data.length; i++){  
+
+    
+
+
+
+
+
+
+
+// var xScale;
+// var yScale;
+
+// function runLater() {
+
+
+//     xMin = Number.MAX_VALUE;
+//     for (var i = 0; i < data.length; i++) {
+//         if (data[i].poverty < xMin) {
+//             xMin = parseFloat(data[i].
+
+
+

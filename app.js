@@ -28,8 +28,8 @@ var height = svgHeight - margin.top - margin.bottom;
 
 var data;
 
-function importData(blah) {
-    data = blah;
+function importData(element) {
+    data = element;
     console.log(data);
     runLater();
     
